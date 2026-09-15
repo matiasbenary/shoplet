@@ -1,0 +1,7 @@
+node_modules
+.env
+cache.db
+dist
+.playwright-mcp
+.claude/settings.local.json
+*.png

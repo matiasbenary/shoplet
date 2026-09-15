@@ -1,0 +1,23 @@
+{
+  "name": "shoplet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev:api & npm run dev:web",
+    "dev:api": "node --env-file=.env --watch server/index.js",
+    "dev:web": "vite",
+    "build": "vite build",
+    "test": "node --test server/serpapi.test.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "openai": "^6.9.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.9"
+  }
+}
