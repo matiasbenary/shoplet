@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { instagramHandles, normalizeGoogle, normalizeMaps, normalizeIgProfile, MAX_IG_PROFILES } from './serpapi.js'
-import { LOCALES, DEFAULT_LOCALE } from './locales.js'
+import { instagramHandles, normalizeGoogle, normalizeMaps, normalizeIgProfile, MAX_IG_PROFILES } from './serpapi.ts'
+import { LOCALES, DEFAULT_LOCALE, type Locale } from './locales.ts'
 
 test('instagramHandles: dedupes, ignores non-profile paths and respects the cap', () => {
   const results = [
@@ -26,6 +26,7 @@ test('all three sources come out with the common shape', () => {
     profile_results: { username: 'velas.lp', full_name: 'Velas LP', biography: 'velas de soja', followers: 1200, posts: [{ caption: 'nuevo lote' }] },
   })
 
+  assert.ok(i, 'a profile with a username must normalize')
   for (const r of [g[0], m[0], i]) {
     assert.ok(r.source && r.name, 'every entry needs source and name')
     assert.equal(typeof r.snippet, 'string')
@@ -44,8 +45,8 @@ test('empty or malformed responses do not blow up', () => {
 
 test('every locale is complete: a typo here silently ruins a country\'s search', () => {
   assert.ok(LOCALES[DEFAULT_LOCALE], 'the default locale must exist')
-  for (const [key, l] of Object.entries(LOCALES)) {
-    for (const field of ['label', 'hl', 'gl', 'google_domain', 'shopTerms', 'buyTerm']) {
+  for (const [key, l] of Object.entries<Locale>(LOCALES)) {
+    for (const field of ['label', 'hl', 'gl', 'google_domain', 'shopTerms', 'buyTerm'] as (keyof Locale)[]) {
       assert.ok(l[field], `locale "${key}" is missing ${field}`)
     }
     assert.ok(!/\s/.test(l.google_domain), `locale "${key}" has a broken google_domain`)

@@ -1,6 +1,15 @@
 // Shared by the API and the frontend: the select's options live here, and each one
 // carries what SerpApi needs plus the local words a small shop actually uses.
 // ponytail: a plain object, not a database. Adding a country is one entry.
+export interface Locale {
+  label: string
+  hl: string
+  gl: string
+  google_domain: string
+  shopTerms: string
+  buyTerm: string
+}
+
 export const LOCALES = {
   ar: {
     label: 'Argentina',
@@ -38,6 +47,10 @@ export const LOCALES = {
     shopTerms: '(loja OR empreendedorismo)',
     buyTerm: 'comprar',
   },
-}
+} satisfies Record<string, Locale>
 
-export const DEFAULT_LOCALE = 'ar'
+export type LocaleKey = keyof typeof LOCALES
+
+export const DEFAULT_LOCALE: LocaleKey = 'ar'
+
+export const isLocaleKey = (k: string): k is LocaleKey => k in LOCALES
