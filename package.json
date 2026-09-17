@@ -9,11 +9,13 @@
     "dev:web": "vite",
     "build": "vite build",
     "test": "node --test server/serpapi.test.ts",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "mcp": "node --env-file=.env server/mcp.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.49",
     "@ai-sdk/react": "^4.0.105",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@tailwindcss/vite": "^4.3.3",
     "ai": "^7.0.102",
     "express": "^5.1.0",

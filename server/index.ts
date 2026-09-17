@@ -1,6 +1,8 @@
 import express from 'express'
 import type { UIMessage } from 'ai'
+import { z } from 'zod'
 import { chat } from './chat.ts'
+import { findShops, findShopsInput } from './find-shops.ts'
 import { LOCALES, DEFAULT_LOCALE, isLocaleKey } from './locales.ts'
 
 const app = express()
@@ -20,6 +22,20 @@ app.post('/api/chat', async (req, res) => {
   try {
     const result = await chat(messages, String(loc ?? '').trim(), key)
     result.pipeUIMessageStreamToResponse(res)
+  } catch (err) {
+    console.error(err)
+    res.status(502).json({ error: (err as Error).message })
+  }
+})
+
+// The same tool, for agents that just want JSON in / JSON out and no chat.
+app.post('/api/search', async (req, res) => {
+  const parsed = findShopsInput.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ error: z.prettifyError(parsed.error) })
+
+  try {
+    const { query, loc, locale } = parsed.data
+    res.json(await findShops(query.trim(), loc.trim(), locale))
   } catch (err) {
     console.error(err)
     res.status(502).json({ error: (err as Error).message })

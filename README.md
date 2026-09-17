@@ -16,8 +16,30 @@ npm run dev            # api on :3001, web on :5173
 
 ## API
 
-- `GET /api/search?q=<query>&loc=<city>&locale=<locale>` → `{ q, loc, locale, shops[], curated, cached }`
+- `POST /api/chat` `{ messages[], loc, locale }` → AI SDK UI message stream (what the web app uses)
+- `POST /api/search` `{ query, loc?, locale? }` → `{ query, shops[] }` — the search on its own, for agents that don't want a chat
 - `GET /api/locales` → available locales
+
+## MCP
+
+The same search as an MCP tool (`findShops`), over stdio:
+
+```sh
+npm run mcp
+```
+
+In an MCP client (Claude Code, Cursor, Claude Desktop):
+
+```json
+{
+  "mcpServers": {
+    "shoplet": {
+      "command": "node",
+      "args": ["--env-file=.env", "/absolute/path/to/shoplet/server/mcp.ts"]
+    }
+  }
+}
+```
 
 ## Test
 

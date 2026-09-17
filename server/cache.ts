@@ -1,7 +1,9 @@
 import { DatabaseSync } from 'node:sqlite'
+import { join } from 'node:path'
 
 // ponytail: node:sqlite is stdlib in Node 24 — no better-sqlite3, no redis.
-const db = new DatabaseSync('cache.db')
+// Path is anchored to the repo, not cwd: an MCP client launches us from anywhere.
+const db = new DatabaseSync(join(import.meta.dirname, '..', 'cache.db'))
 db.exec(`CREATE TABLE IF NOT EXISTS cache (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL,

@@ -1,8 +1,7 @@
 import { streamText, stepCountIs, tool, convertToModelMessages, type UIMessage } from 'ai'
 import { z } from 'zod'
-import { nearai, MODEL, curate } from './curate.ts'
-import { search } from './serpapi.ts'
-import * as cache from './cache.ts'
+import { nearai, MODEL } from './curate.ts'
+import { findShops } from './find-shops.ts'
 import { LOCALES, type LocaleKey } from './locales.ts'
 
 const SYSTEM = `You are Shoplet, a shopping assistant for small shops and independent businesses.
@@ -29,17 +28,7 @@ export async function chat(messages: UIMessage[], loc: string, locale: LocaleKey
         inputSchema: z.object({
           query: z.string().describe("the product to look for, in the user's language"),
         }),
-        async execute({ query }) {
-          const key = `${query}|${loc}|${locale}`.toLowerCase()
-          const hit = cache.get<{ shops: unknown[] }>(key)
-          if (hit) return hit
-
-          const raw = await search(query, loc, locale)
-          if (raw.length === 0) return { shops: [] }
-          const payload = { query, shops: await curate(query, loc, raw) }
-          cache.set(key, payload)
-          return payload
-        },
+        execute: ({ query }) => findShops(query, loc, locale),
       }),
     },
   })
