@@ -1,6 +1,9 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { instagramHandles, normalizeGoogle, normalizeMaps, normalizeIgProfile, MAX_IG_PROFILES } from './serpapi.ts'
+import { instagramHandles, normalizeGoogle, normalizeMaps, normalizeIgProfile, MAX_IG_PROFILES } from './providers/serpapi.ts'
+import { normalizeBravePois, normalizeBraveWeb } from './providers/brave.ts'
+import { PROVIDERS } from './search.ts'
+import { queries } from './search-provider.ts'
 import { LOCALES, DEFAULT_LOCALE, type Locale } from './locales.ts'
 
 test('instagramHandles: dedupes, ignores non-profile paths and respects the cap', () => {
@@ -41,6 +44,36 @@ test('empty or malformed responses do not blow up', () => {
   assert.deepEqual(normalizeGoogle({}), [])
   assert.deepEqual(normalizeMaps({}), [])
   assert.equal(normalizeIgProfile({}), null)
+})
+
+test('Brave web and POI responses normalize to the provider-independent shape', () => {
+  const web = normalizeBraveWeb({ web: { results: [{ title: 'Tienda Norte', url: 'https://example.com', description: 'local shop' }] } })
+  const maps = normalizeBravePois({ results: [{
+    title: 'Tienda Sur', url: 'https://shop.example', description: 'Boutique',
+    postal_address: { displayAddress: 'Calle 1' }, contact: { telephone: '123' },
+    rating: { ratingValue: 4.7, reviewCount: 18 },
+  }] })
+
+  assert.equal(web[0].source, 'web')
+  assert.deepEqual(maps[0], {
+    source: 'maps', name: 'Tienda Sur', url: 'https://shop.example', snippet: 'Boutique',
+    address: 'Calle 1', phone: '123', rating: 4.7, reviews: 18,
+  })
+})
+
+test('every configured provider implements the shared contract', () => {
+  for (const [key, provider] of Object.entries(PROVIDERS)) {
+    assert.equal(provider.name, key, 'the record key must match the provider name: it is the cache key')
+    assert.equal(typeof provider.search, 'function')
+  }
+})
+
+test('queries: location is optional and never leaves a dangling space', () => {
+  const withLoc = queries('velas', 'La Plata', 'ar')
+  assert.equal(withLoc.maps, 'velas La Plata')
+  assert.ok(withLoc.web.includes('comprar') && withLoc.web.includes('La Plata'))
+  assert.ok(withLoc.ig.includes('site:instagram.com'))
+  assert.equal(queries('velas', '', 'ar').maps, 'velas')
 })
 
 test('every locale is complete: a typo here silently ruins a country\'s search', () => {

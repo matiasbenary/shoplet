@@ -6,7 +6,7 @@ import type { Shop } from '../server/curate.ts'
 import { ProfilePanel, useProfile, type Profile } from './profile.tsx'
 import { applyTheme, getInitialTheme, type Theme } from './theme.ts'
 
-const SOURCES: Record<string, string> = { instagram: 'IG', maps: 'Maps', google: 'Google', 'google-ig': 'Google' }
+const SOURCES: Record<string, string> = { instagram: 'IG', maps: 'Maps', web: 'Web', 'web-ig': 'Web' }
 
 function waLink(phone: string): string | null {
   const digits = phone.replace(/\D/g, '')

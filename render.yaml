@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: shoplet-mcp
+    runtime: node
+    plan: starter
+    buildCommand: npm ci
+    startCommand: node server/mcp-http.ts
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 24
+      # ponytail: serpapi provider doesn't need a browser; skip the 100MB+ download.
+      # Drop this if you ever switch SEARCH_PROVIDER to playwright.
+      - key: PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD
+        value: 1
+      - key: SEARCH_PROVIDER
+        value: serpapi
+      - key: SERPAPI_KEY
+        sync: false
+      - key: NEAR_AI_API_KEY
+        sync: false
+      - key: MCP_TOKEN
+        sync: false
+      - key: CACHE_DB
+        value: /var/data/cache.db
+    disk:
+      name: shoplet-cache
+      mountPath: /var/data
+      sizeGB: 1

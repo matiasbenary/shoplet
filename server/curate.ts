@@ -1,7 +1,7 @@
 import { generateObject } from 'ai'
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { z } from 'zod'
-import type { RawResult } from './serpapi.ts'
+import type { RawResult } from './search-provider.ts'
 
 // The schema is the contract: the AI SDK enforces it, so no hand-parsing of JSON.
 const shopSchema = z.object({
@@ -31,7 +31,7 @@ export const nearai = createOpenAICompatible({
 export const MODEL = process.env.NEAR_AI_MODEL || 'deepseek-ai/DeepSeek-V3.1'
 
 const SYSTEM = `You curate results for a search engine focused on small shops and independent businesses.
-You receive raw results from Google, Google Maps and Instagram about a product, and you do FOUR things in a single pass:
+You receive raw results from web search, local/maps search and Instagram about a product, and you do FOUR things in a single pass:
 
 1. FILTER: drop big chains, marketplaces (Amazon, Mercado Libre, Alibaba, Shein), supermarkets,
    blogs, news articles, aggregators, directories, and anything that is not a real small business.
@@ -43,7 +43,7 @@ HARD RULES:
 - Never invent a link, a phone number, a handle or an address. If it is not in the input, use null.
 - Copy URLs verbatim from the input.
 - "reason" is ONE line in ENGLISH explaining why this shop might carry the product. Plain language, no marketing copy.
-- "sources" is where the info came from: only the literal strings "instagram", "maps" and/or "google". Never a URL.
+- "sources" is where the info came from: only the literal strings "instagram", "maps" and/or "web". Never a URL.
 - Do not promise availability: nobody checked inventory.
 
 Reply with a json object shaped {"shops":[...]}. The word "json" must stay in this prompt: some

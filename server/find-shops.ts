@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { curate, type Shop } from './curate.ts'
-import { search } from './serpapi.ts'
+import { activeSearchProvider, search } from './search.ts'
 import * as cache from './cache.ts'
 import { LOCALES, DEFAULT_LOCALE, type LocaleKey } from './locales.ts'
 
@@ -17,7 +17,7 @@ export async function findShops(
   loc = '',
   locale: LocaleKey = DEFAULT_LOCALE,
 ): Promise<{ query: string; shops: Shop[] }> {
-  const key = `${query}|${loc}|${locale}`.toLowerCase()
+  const key = `${activeSearchProvider.name}|${query}|${loc}|${locale}`.toLowerCase()
   const hit = cache.get<{ query: string; shops: Shop[] }>(key)
   if (hit) return hit
 
