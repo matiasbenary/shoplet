@@ -28,7 +28,7 @@ export const nearai = createOpenAICompatible({
   supportsStructuredOutputs: true,
 })
 
-export const MODEL = process.env.NEAR_AI_MODEL || 'deepseek-ai/DeepSeek-V3.1'
+export const MODEL = process.env.NEAR_AI_MODEL || 'openai/gpt-5-mini'
 
 const SYSTEM = `You curate results for a search engine focused on small shops and independent businesses.
 You receive raw results from web search, local/maps search and Instagram about a product, and you do FOUR things in a single pass:

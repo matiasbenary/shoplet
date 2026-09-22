@@ -5,9 +5,10 @@ import { findShops, findShopsInput } from './find-shops.ts'
 
 const HOST = '0.0.0.0'
 const PORT = Number(process.env.PORT || 3002)
+// Optional: without MCP_TOKEN the /mcp endpoint is public.
 const MCP_TOKEN = process.env.MCP_TOKEN
 
-if (!MCP_TOKEN) throw new Error('MCP_TOKEN is required')
+if (!MCP_TOKEN) console.warn('MCP_TOKEN not set: /mcp is unauthenticated')
 
 function createShopletServer(): McpServer {
   const server = new McpServer({ name: 'shoplet', version: '0.1.0' })
@@ -36,7 +37,7 @@ app.get('/health', (_req, res) => {
 })
 
 app.use('/mcp', (req, res, next) => {
-  if (req.headers.authorization !== `Bearer ${MCP_TOKEN}`) {
+  if (MCP_TOKEN && req.headers.authorization !== `Bearer ${MCP_TOKEN}`) {
     res.status(401).json({ error: 'Unauthorized' })
     return
   }
