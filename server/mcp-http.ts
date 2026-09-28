@@ -1,27 +1,9 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { createMcpExpressApp } from '@modelcontextprotocol/sdk/server/express.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
-import { findShops, findShopsInput } from './find-shops.ts'
+import { createShopletServer } from './mcp-server.ts'
 
 const HOST = '0.0.0.0'
 const PORT = Number(process.env.PORT || 3002)
-function createShopletServer(): McpServer {
-  const server = new McpServer({ name: 'shoplet', version: '0.1.0' })
-
-  server.registerTool(
-    'findShops',
-    {
-      description: 'Search small shops and independent businesses that may carry a product.',
-      inputSchema: findShopsInput.shape,
-    },
-    async ({ query, loc, locale }) => {
-      const result = await findShops(query.trim(), loc.trim(), locale)
-      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] }
-    },
-  )
-
-  return server
-}
 
 // ponytail: /mcp is public on purpose. Render terminates HTTPS in front.
 const app = createMcpExpressApp({ host: HOST })

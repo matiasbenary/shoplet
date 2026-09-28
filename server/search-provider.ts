@@ -2,7 +2,7 @@ import { LOCALES, type LocaleKey } from './locales.ts'
 
 // Provider-independent result channels. The provider itself is selected outside
 // this contract, so downstream curation does not need to know vendor response shapes.
-export type SearchSource = 'web' | 'web-ig' | 'maps' | 'instagram'
+type SearchSource = 'web' | 'web-ig' | 'maps' | 'instagram'
 
 export interface RawResult {
   source: SearchSource

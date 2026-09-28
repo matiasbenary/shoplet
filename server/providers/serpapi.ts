@@ -76,16 +76,12 @@ export const serpapi: SearchProvider = {
     const { hl, gl, google_domain } = LOCALES[localeKey]
     const q = queries(query, location, localeKey)
 
-    const web = request({ engine: 'google', q: q.web, hl, gl, google_domain, num: 20 })
-    const maps = request({ engine: 'google_maps', q: q.maps, hl, gl, type: 'search' })
-    // Kicked off now, awaited last: swallow here so a failure is not an unhandled rejection.
-    web.catch(() => {})
-    maps.catch(() => {})
-
-    const instagramLinks = normalizeGoogle(
-      await request({ engine: 'google', q: q.ig, hl, gl, google_domain, num: 20 }),
-      'web-ig',
-    )
+    const [web, maps, instagram] = await Promise.all([
+      request({ engine: 'google', q: q.web, hl, gl, google_domain, num: 20 }),
+      request({ engine: 'google_maps', q: q.maps, hl, gl, type: 'search' }),
+      request({ engine: 'google', q: q.ig, hl, gl, google_domain, num: 20 }),
+    ])
+    const instagramLinks = normalizeGoogle(instagram, 'web-ig')
     const profiles = await Promise.all(
       instagramHandles(instagramLinks).map((handle) =>
         request({ engine: 'instagram_profile', profile_id: handle }).then(normalizeIgProfile).catch(() => null),

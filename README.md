@@ -4,7 +4,7 @@ Find small shops and independent sellers that carry what you're looking for.
 
 Live search (no pre-built index): a query uses a configurable search provider across
 the web, local results and Instagram, then an LLM curates the results into shops with contact info,
-and the answer is cached for 24h in SQLite.
+and the answer is cached for 30 days in SQLite.
 
 ## Run
 
