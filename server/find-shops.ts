@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { curate, type Shop } from './curate.ts'
-import { activeSearchProvider, search } from './search.ts'
+import { activeSearchProvider, search, searchWeb } from './search.ts'
+import { websiteProductQuery } from './search-provider.ts'
 import * as cache from './cache.ts'
 import { LOCALES, DEFAULT_LOCALE, type LocaleKey } from './locales.ts'
 
@@ -23,7 +24,9 @@ export async function findShops(
 
   const raw = await search(query, loc, locale)
   if (raw.length === 0) return { query, shops: [] }
-  const payload = { query, shops: await curate(query, loc, raw) }
+  const websiteQuery = websiteProductQuery(query, raw)
+  const websiteResults = websiteQuery ? await searchWeb(websiteQuery, locale).catch(() => []) : []
+  const payload = { query, shops: await curate(query, loc, [...raw, ...websiteResults]) }
   cache.set(key, payload)
   return payload
 }

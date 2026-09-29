@@ -72,6 +72,11 @@ export function normalizeIgProfile(json: any): RawResult | null {
 export const serpapi: SearchProvider = {
   name: 'serpapi',
 
+  async searchWeb(query, localeKey) {
+    const { hl, gl, google_domain } = LOCALES[localeKey]
+    return normalizeGoogle(await request({ engine: 'google', q: query, hl, gl, google_domain, num: 20 }))
+  },
+
   async search(query, location, localeKey) {
     const { hl, gl, google_domain } = LOCALES[localeKey]
     const q = queries(query, location, localeKey)

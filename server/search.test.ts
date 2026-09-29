@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { instagramHandles, normalizeGoogle, normalizeMaps, normalizeIgProfile, MAX_IG_PROFILES } from './providers/serpapi.ts'
 import { normalizeBravePois, normalizeBraveWeb } from './providers/brave.ts'
 import { PROVIDERS } from './search.ts'
-import { queries } from './search-provider.ts'
+import { queries, websiteProductQuery } from './search-provider.ts'
 import { LOCALES, DEFAULT_LOCALE, type Locale } from './locales.ts'
 
 test('instagramHandles: dedupes, ignores non-profile paths and respects the cap', () => {
@@ -74,6 +74,15 @@ test('queries: location is optional and never leaves a dangling space', () => {
   assert.ok(withLoc.web.includes('comprar') && withLoc.web.includes('La Plata'))
   assert.ok(withLoc.ig.includes('site:instagram.com'))
   assert.equal(queries('velas', '', 'ar').maps, 'velas')
+})
+
+test('websiteProductQuery searches candidate shop sites and skips marketplaces', () => {
+  const query = websiteProductQuery('velas', [
+    { source: 'maps', name: 'Luz', url: 'https://www.luz.example/catalogo', snippet: '' },
+    { source: 'instagram', name: 'Sur', url: 'https://instagram.com/sur', external_url: 'https://sur.example', snippet: '' },
+    { source: 'web', name: 'Marketplace', url: 'https://mercadolibre.com/item', snippet: '' },
+  ])
+  assert.equal(query, 'velas (site:luz.example OR site:sur.example)')
 })
 
 test('every locale is complete: a typo here silently ruins a country\'s search', () => {

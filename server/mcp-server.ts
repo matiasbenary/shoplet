@@ -6,7 +6,7 @@ export function createShopletServer() {
   server.registerTool(
     'findShops',
     {
-      description: 'Search small shops and independent businesses that may carry a product.',
+      description: 'Search small shops and independent businesses for a product, including their websites when available.',
       inputSchema: findShopsInput.shape,
     },
     async ({ query, loc, locale }) => ({

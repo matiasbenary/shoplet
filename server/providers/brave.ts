@@ -60,6 +60,10 @@ async function localResults(query: string, localeKey: LocaleKey): Promise<RawRes
 export const brave: SearchProvider = {
   name: 'brave',
 
+  async searchWeb(query, localeKey) {
+    return normalizeBraveWeb(await request('/web/search', webParams(query, localeKey)))
+  },
+
   async search(query, location, localeKey) {
     const q = queries(query, location, localeKey)
     const [web, maps, instagram] = await Promise.all([

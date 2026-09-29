@@ -21,6 +21,7 @@ export interface RawResult {
 export interface SearchProvider {
   readonly name: string
   search(query: string, location: string, locale: LocaleKey): Promise<RawResult[]>
+  searchWeb(query: string, locale: LocaleKey): Promise<RawResult[]>
 }
 
 // The three channels every provider searches. Same wording for all of them, so a
@@ -33,4 +34,22 @@ export function queries(query: string, location: string, localeKey: LocaleKey) {
     maps: `${query}${where}`,
     ig: `"${query}"${where} ${shopTerms} site:instagram.com`,
   }
+}
+
+const NON_SHOP_HOSTS = /(^|\.)(amazon\.|mercadolibre\.|alibaba\.|shein\.|instagram\.|facebook\.|google\.)/
+
+export function websiteProductQuery(query: string, results: RawResult[]): string | null {
+  const hosts = new Set<string>()
+  for (const result of results) {
+    for (const value of [result.url, result.external_url]) {
+      if (!value) continue
+      try {
+        const host = new URL(value).hostname.replace(/^www\./, '')
+        if (!NON_SHOP_HOSTS.test(host)) hosts.add(host)
+      } catch {}
+      if (hosts.size === 5) break
+    }
+    if (hosts.size === 5) break
+  }
+  return hosts.size ? `${query} (${[...hosts].map((host) => `site:${host}`).join(' OR ')})` : null
 }

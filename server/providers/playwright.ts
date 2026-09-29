@@ -98,6 +98,16 @@ async function googleMaps(context: BrowserContext, query: string, localeKey: Loc
 export const playwright: SearchProvider = {
   name: 'playwright',
 
+  async searchWeb(query, localeKey) {
+    const locale = LOCALES[localeKey]
+    const context = await (await browser()).newContext({ locale: `${locale.hl}-${locale.gl.toUpperCase()}` })
+    try {
+      return await googleSearch(context, query, localeKey, 'web')
+    } finally {
+      await context.close()
+    }
+  },
+
   async search(query, location, localeKey) {
     const q = queries(query, location, localeKey)
     const locale = LOCALES[localeKey]

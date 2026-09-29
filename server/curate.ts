@@ -44,6 +44,7 @@ HARD RULES:
 - Copy URLs verbatim from the input.
 - "reason" is ONE line in ENGLISH explaining why this shop might carry the product. Plain language, no marketing copy.
 - "sources" is where the info came from: only the literal strings "instagram", "maps" and/or "web". Never a URL.
+- A product or catalog page on the business's own website is the strongest evidence. Prefer that URL for "web".
 - Do not promise availability: nobody checked inventory.
 
 Reply with a json object shaped {"shops":[...]}. The word "json" must stay in this prompt: some

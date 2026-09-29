@@ -17,3 +17,7 @@ export const activeSearchProvider = PROVIDERS[configured as keyof typeof PROVIDE
 export function search(query: string, location: string, locale: LocaleKey = DEFAULT_LOCALE) {
   return activeSearchProvider.search(query, location, locale)
 }
+
+export function searchWeb(query: string, locale: LocaleKey = DEFAULT_LOCALE) {
+  return activeSearchProvider.searchWeb(query, locale)
+}
